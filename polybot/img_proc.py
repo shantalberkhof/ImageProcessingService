@@ -1,5 +1,8 @@
 from pathlib import Path
 from matplotlib.image import imread, imsave
+from PIL import Image
+
+import math
 
 
 def rgb2gray(rgb):
@@ -51,8 +54,12 @@ class Img:
             self.data[i] = res
 
     def rotate(self):
-        # TODO remove the `raise` below, and write your implementation
-        raise NotImplementedError()
+        # To do
+        self.data = list(zip(*self.data[::-1]))
+
+    def rotate2(self):
+        self.rotate()
+        self.rotate()
 
     def salt_n_pepper(self):
         # TODO remove the `raise` below, and write your implementation

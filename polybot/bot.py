@@ -3,6 +3,9 @@ from loguru import logger
 import os
 import time
 from telebot.types import InputFile
+from time import sleep
+import logging
+
 from polybot.img_proc import Img
 
 
@@ -75,4 +78,31 @@ class QuoteBot(Bot):
 
 
 class ImageProcessingBot(Bot):
-    pass
+    def handle_message(self, msg):
+        logger.info(f'Incoming message: {msg}')
+
+        try:
+            logger.info("Received message: %s", msg)
+            caption = msg.get('caption', '').lower()
+
+            if self.is_current_msg_photo(msg):
+                path = self.download_user_photo(msg)
+                my_img = Img(path)
+
+                # Check if the caption contains a valid filter command
+                if caption == 'rotate':
+                    my_img.rotate()
+                elif caption == 'rotate 2':
+                    my_img.rotate2()
+                elif caption == 'blur':
+                    my_img.blur()
+                elif caption == 'contour':
+                    my_img.contour()
+
+                new_path = my_img.save_img()
+                self.send_photo(msg['chat']['id'], new_path)
+
+        except Exception as e:
+            logger.error("Error processing message: %s", e)
+            self.send_text(msg['chat']['id'], "Something went wrong... please try again.")
+
